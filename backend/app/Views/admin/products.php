@@ -18,6 +18,16 @@
             </a>
         </div>
 
+        <!-- Search Bar with Clear Button -->
+        <div class="mb-6 flex items-center gap-2">
+            <input type="text" id="productSearch" placeholder="Search products..."
+                class="flex-1 px-4 py-2 rounded-lg bg-[#1b1b1b] border border-[var(--secondary)] text-[var(--neutral)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+            <button id="clearSearch" 
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition">
+                Clear
+            </button>
+        </div>
+
         <!-- Error/Success Messages -->
         <?php if (session()->getFlashdata('success')): ?>
             <div class="bg-green-500/20 border border-green-500 text-green-500 px-4 py-3 rounded-lg mb-6">
@@ -38,7 +48,7 @@
             </div>
         <?php else: ?>
             <!-- Products Table -->
-            <div class="bg-[#1b1b1b] rounded-lg shadow-xl overflow-hidden border border-[var(--secondary)]/20">
+            <div id="productsGrid" class="bg-[#1b1b1b] rounded-lg shadow-xl overflow-hidden border border-[var(--secondary)]/20">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-[var(--secondary)]/20 border-b border-[var(--secondary)]/30">
@@ -187,6 +197,33 @@
                 alert('Error deleting product: ' + error);
             });
         }
+
+        function filterTable() {
+            const query = document.getElementById('productSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#productsGrid tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let matches = false;
+
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(query)) {
+                        matches = true;
+                    }
+                });
+
+                row.style.display = matches ? '' : 'none';
+            });
+        }
+
+        document.getElementById('productSearch').addEventListener('input', filterTable);
+
+        document.getElementById('clearSearch').addEventListener('click', () => {
+            const input = document.getElementById('productSearch');
+            input.value = '';
+            filterTable();
+            input.focus();
+        });
     </script>
 </body>
 </html>

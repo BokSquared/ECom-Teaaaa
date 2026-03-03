@@ -170,89 +170,55 @@
     <?= view('components/footer'); ?>
 
     <script>
-    // Single filterCategory function
-    function filterCategory(category, event) {
-        // Update active button
-        if (event) {
-            document.querySelectorAll('.category-filter').forEach(btn => {
-                btn.classList.remove('active');
+        function setActive(button, category) {
+            // Remove active style from all buttons
+            document.querySelectorAll('button[data-category]').forEach(btn => {
+                btn.classList.remove('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+                btn.classList.add('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
             });
-            event.target.classList.add('active');
+
+            // Set active style on clicked button
+            button.classList.remove('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
+            button.classList.add('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+
+            // Filter products based on active category + search input
+            filterProducts(category);
         }
 
-        // Clear search input when switching categories
-        document.getElementById('productSearch').value = '';
+        function filterProducts(category) {
+            const query = document.getElementById('productSearch').value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
 
-        const products = document.querySelectorAll('.product-card');
-        products.forEach(product => {
-            if (category === 'all' || product.dataset.category === category) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-    }
+            products.forEach(product => {
+                const name = product.querySelector('h3').textContent.toLowerCase();
+                const descEl = product.querySelector('p');
+                const desc = descEl ? descEl.textContent.toLowerCase() : '';
+                const matchesCategory = (category === 'all') || (product.dataset.category === category);
+                const matchesSearch = name.includes(query) || desc.includes(query);
 
-    // Search bar functionality
-    document.getElementById('productSearch').addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const activeCategory = document.querySelector('.category-filter.active').dataset.category;
-
-        const products = document.querySelectorAll('.product-card');
-        products.forEach(product => {
-            const name = product.querySelector('h3').textContent.toLowerCase();
-            const desc = product.querySelector('p') ? product.querySelector('p').textContent.toLowerCase() : '';
-            const matchesCategory = (activeCategory === 'all') || (product.dataset.category === activeCategory);
-            const matchesSearch = name.includes(query) || desc.includes(query);
-
-            product.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
-        });
-    });
-
-    // Clear button functionality
-    document.getElementById('clearSearch').addEventListener('click', function() {
-        const searchInput = document.getElementById('productSearch');
-        searchInput.value = ''; // Clear input
-
-        const activeCategory = document.querySelector('.category-filter.active').dataset.category;
-        const products = document.querySelectorAll('.product-card');
-
-        products.forEach(product => {
-            if (activeCategory === 'all' || product.dataset.category === activeCategory) {
-                product.style.display = 'block';
-            } else {
-                product.style.display = 'none';
-            }
-        });
-
-        searchInput.focus();
-    });
-
-    function setActive(button, category) {
-    // Remove active style from all buttons
-    document.querySelectorAll('button[data-category]').forEach(btn => {
-        btn.classList.remove('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]');
-        btn.classList.add('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
-    });
-
-    // Set active style on clicked button
-    button.classList.remove('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
-    button.classList.add('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]');
-
-    // Filter products
-    const products = document.querySelectorAll('.product-card');
-    products.forEach(product => {
-        if (category === 'all' || product.dataset.category === category) {
-            product.style.display = 'block';
-        } else {
-            product.style.display = 'none';
+                product.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
+            });
         }
-        });
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        setActive(document.querySelector('button[data-category="all"]'), 'all');
-    });
+        // Search input live filtering
+        document.getElementById('productSearch').addEventListener('input', function() {
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+        });
+
+        // Clear button
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            const input = document.getElementById('productSearch');
+            input.value = '';
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+            input.focus();
+        });
+
+        // Initial load: make "All Products" active
+        document.addEventListener('DOMContentLoaded', () => {
+            setActive(document.querySelector('button[data-category="all"]'), 'all');
+        });
 </script>
 </body>
 
