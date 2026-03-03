@@ -2,22 +2,39 @@
 <html lang="en">
 <?= view('components/head', ['title' => '🔥 Browse Products']) ?>
 
-<body class="bg-[var(--accent)] text-[var(--neutral)] font-sans">
+<body class="bg-[var(--accent)] font-sans text-[var(--neutral)]">
     <?= view('components/header_user'); ?>
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="bg-green-500/20 mb-6 p-4 border border-green-500 rounded-lg text-green-400">
+            <?= session()->getFlashdata('success') ?>
+        </div>
+    <?php endif; ?>
 
-    <div class="container mx-auto px-6 py-8">
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="bg-red-500/20 mb-6 p-4 border border-red-500 rounded-lg text-red-400">
+            <?= session()->getFlashdata('error') ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('warning')): ?>
+        <div class="bg-yellow-500/20 mb-6 p-4 border border-yellow-500 rounded-lg text-yellow-400">
+            <?= session()->getFlashdata('warning') ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="mx-auto px-6 py-8 container">
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-[var(--neutral)]">Product Gallery</h1>
-            <p class="text-[var(--neutral)]/70 mt-2">Explore our collection of artworks, artbooks, and merchandise</p>
+            <h1 class="font-bold text-[var(--neutral)] text-3xl">Product Gallery</h1>
+            <p class="mt-2 text-[var(--neutral)]/70">Explore our collection of artworks, artbooks, and merchandise</p>
         </div>
 
         <!-- Search Bar with Clear Button -->
-        <div class="mb-6 flex items-center gap-2">
+        <div class="flex items-center gap-2 mb-6">
             <input type="text" id="productSearch" placeholder="Search products..."
-                class="flex-1 px-4 py-2 rounded-lg bg-[#1b1b1b] border border-[var(--secondary)] text-[var(--neutral)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
-            <button id="clearSearch" 
-                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition">
+                class="flex-1 bg-[#1b1b1b] px-4 py-2 border border-[var(--secondary)] rounded-lg focus:outline-none focus:ring-[var(--primary)] focus:ring-2 text-[var(--neutral)]" />
+            <button id="clearSearch"
+                class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-semibold text-white text-sm transition">
                 Clear
             </button>
         </div>
@@ -25,23 +42,23 @@
         <!-- Filter Tabs -->
         <div class="flex gap-4 mb-8 overflow-x-auto">
             <button onclick="setActive(this, 'all')"
-                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--primary)] text-white border-2 border-[var(--primary)]"
-                    data-category="all">
+                class="bg-[var(--primary)] px-6 py-3 border-[var(--primary)] border-2 rounded-lg font-semibold text-white whitespace-nowrap transition"
+                data-category="all">
                 All Products
             </button>
             <button onclick="setActive(this, 'artwork')"
-                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
-                    data-category="artwork">
+                class="bg-[var(--accent)] px-6 py-3 border-[var(--secondary)] border-2 rounded-lg font-semibold text-[var(--neutral)] whitespace-nowrap transition"
+                data-category="artwork">
                 Artworks
             </button>
             <button onclick="setActive(this, 'artbook')"
-                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
-                    data-category="artbook">
+                class="bg-[var(--accent)] px-6 py-3 border-[var(--secondary)] border-2 rounded-lg font-semibold text-[var(--neutral)] whitespace-nowrap transition"
+                data-category="artbook">
                 Artbooks
             </button>
             <button onclick="setActive(this, 'merchandise')"
-                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
-                    data-category="merchandise">
+                class="bg-[var(--accent)] px-6 py-3 border-[var(--secondary)] border-2 rounded-lg font-semibold text-[var(--neutral)] whitespace-nowrap transition"
+                data-category="merchandise">
                 Merchandise
             </button>
         </div>
@@ -49,31 +66,31 @@
         <!-- Products Grid -->
         <?php if (empty($products)): ?>
             <!-- Empty State -->
-            <div class="bg-[#1b1b1b] rounded-lg shadow-xl p-12 border border-[var(--secondary)]/20 text-center">
-                <div class="w-24 h-24 mx-auto mb-6 bg-[var(--secondary)]/20 rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-box-open text-[var(--secondary)] text-4xl"></i>
+            <div class="bg-[#1b1b1b] shadow-xl p-12 border border-[var(--secondary)]/20 rounded-lg text-center">
+                <div class="flex justify-center items-center bg-[var(--secondary)]/20 mx-auto mb-6 rounded-full w-24 h-24">
+                    <i class="text-[var(--secondary)] text-4xl fa-solid fa-box-open"></i>
                 </div>
-                <h2 class="text-2xl font-bold text-[var(--neutral)] mb-3">No Products Available</h2>
-                <p class="text-[var(--neutral)]/70 mb-6">Check back later for new items!</p>
+                <h2 class="mb-3 font-bold text-[var(--neutral)] text-2xl">No Products Available</h2>
+                <p class="mb-6 text-[var(--neutral)]/70">Check back later for new items!</p>
             </div>
         <?php else: ?>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
+            <div class="gap-6 grid md:grid-cols-2 lg:grid-cols-3" id="productsGrid">
                 <?php foreach ($products as $product): ?>
-                    <div class="product-card bg-[#1b1b1b] rounded-lg shadow-xl border border-[var(--secondary)]/20 overflow-hidden hover:border-[var(--secondary)]/40 transition duration-200"
-                         data-category="<?= esc($product->category) ?>">
-                        
+                    <div class="bg-[#1b1b1b] shadow-xl border border-[var(--secondary)]/20 hover:border-[var(--secondary)]/40 rounded-lg overflow-hidden transition duration-200 product-card"
+                        data-category="<?= esc($product->category) ?>">
+
                         <!-- Product Image -->
-                        <div class="relative h-64 bg-[var(--secondary)]/10 overflow-hidden">
+                        <div class="relative bg-[var(--secondary)]/10 h-64 overflow-hidden">
                             <?php if ($product->image_url): ?>
-                                <img src="<?= esc($product->image_url) ?>" 
-                                     alt="<?= esc($product->name) ?>"
-                                     class="w-full h-full object-cover">
+                                <img src="<?= esc($product->image_url) ?>"
+                                    alt="<?= esc($product->name) ?>"
+                                    class="w-full h-full object-cover">
                             <?php else: ?>
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <i class="fa-solid fa-image text-[var(--secondary)] text-6xl"></i>
+                                <div class="flex justify-center items-center w-full h-full">
+                                    <i class="text-[var(--secondary)] text-6xl fa-solid fa-image"></i>
                                 </div>
                             <?php endif; ?>
-                            
+
                             <!-- Category Badge -->
                             <?php
                             $categoryColors = [
@@ -83,7 +100,7 @@
                             ];
                             $color = $categoryColors[$product->category] ?? 'gray-500';
                             ?>
-                            <div class="absolute top-4 right-4">
+                            <div class="top-4 right-4 absolute">
                                 <span class="bg-[var(--<?= $color ?>)]/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                                     <?= ucfirst(esc($product->category)) ?>
                                 </span>
@@ -91,64 +108,83 @@
 
                             <!-- Stock Status Badge -->
                             <?php if ($product->stock <= 5 && $product->stock > 0): ?>
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-orange-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                <div class="top-4 left-4 absolute">
+                                    <span class="bg-orange-500/90 backdrop-blur-sm px-3 py-1 rounded-full font-semibold text-white text-xs">
                                         Only <?= $product->stock ?> left
                                     </span>
                                 </div>
                             <?php elseif ($product->stock == 0): ?>
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-red-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                <div class="top-4 left-4 absolute">
+                                    <span class="bg-red-500/90 backdrop-blur-sm px-3 py-1 rounded-full font-semibold text-white text-xs">
                                         Out of Stock
                                     </span>
                                 </div>
                             <?php else: ?>
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-green-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                <div class="top-4 left-4 absolute">
+                                    <span class="bg-green-500/90 backdrop-blur-sm px-3 py-1 rounded-full font-semibold text-white text-xs">
                                         In Stock
                                     </span>
                                 </div>
                             <?php endif; ?>
                         </div>
 
-                                                <!-- Product Info -->
+                        <!-- Product Info -->
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-[var(--neutral)] mb-2">
+                            <h3 class="mb-2 font-bold text-[var(--neutral)] text-xl">
                                 <?= esc($product->name) ?>
                             </h3>
 
                             <?php if ($product->artist): ?>
-                                <p class="text-[var(--neutral)]/60 text-sm mb-3">
-                                    <i class="fa-solid fa-user mr-1"></i>
+                                <p class="mb-3 text-[var(--neutral)]/60 text-sm">
+                                    <i class="mr-1 fa-solid fa-user"></i>
                                     by <?= esc($product->artist) ?>
                                 </p>
                             <?php endif; ?>
 
                             <?php if ($product->description): ?>
-                                <p class="text-[var(--neutral)]/80 text-sm mb-4 line-clamp-2">
+                                <p class="mb-4 text-[var(--neutral)]/80 text-sm line-clamp-2">
                                     <?= esc($product->description) ?>
                                 </p>
                             <?php endif; ?>
 
-                            <div class="flex items-center justify-between pt-4 border-t border-[var(--secondary)]/20">
+                            <div class="flex justify-between items-center pt-4 border-[var(--secondary)]/20 border-t">
                                 <div>
-                                    <p class="text-[var(--primary)] font-bold text-2xl">
+                                    <p class="font-bold text-[var(--primary)] text-2xl">
                                         $<?= number_format($product->price, 2) ?>
                                     </p>
                                     <p class="text-[var(--neutral)]/60 text-xs">
-                                        <i class="fa-solid fa-box mr-1"></i>
+                                        <i class="mr-1 fa-solid fa-box"></i>
                                         <?= $product->stock ?> in stock
                                     </p>
                                 </div>
 
                                 <?php if ($product->stock > 0): ?>
-                                    <a href="/user/order/confirm/<?= esc($product->id) ?>" 
-                                       class="bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-[var(--neutral)] px-6 py-3 rounded-lg font-semibold transition duration-200">
-                                        Order Now
-                                    </a>
+                                    <div class="flex flex-col gap-2">
+
+                                        <!-- Add to Cart Form -->
+                                        <form method="POST" action="/user/cart/add">
+                                            <?= csrf_field(); ?>
+                                            <input type="hidden" name="product_id" value="<?= esc($product->id) ?>">
+                                            <input type="hidden" name="product_name" value="<?= esc($product->name) ?>">
+                                            <input type="hidden" name="product_price" value="<?= esc($product->price) ?>">
+                                            <input type="hidden" name="product_image" value="<?= esc($product->image_url) ?>">
+
+                                            <button type="submit"
+                                                class="bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 px-6 py-2 rounded-lg w-full font-semibold text-white transition duration-200">
+                                                <i class="mr-2 fa-solid fa-cart-plus"></i>
+                                                Add to Cart
+                                            </button>
+                                        </form>
+
+                                        <!-- Order Now -->
+                                        <a href="/user/order/confirm/<?= esc($product->id) ?>"
+                                            class="bg-[var(--primary)] hover:bg-[var(--primary)]/80 px-6 py-2 rounded-lg w-full font-semibold text-[var(--neutral)] text-center transition duration-200">
+                                            Order Now
+                                        </a>
+                                    </div>
                                 <?php else: ?>
                                     <button disabled
-                                            class="bg-gray-500/20 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">
+                                        class="bg-gray-500/20 px-6 py-3 rounded-lg font-semibold text-gray-500 cursor-not-allowed">
                                         Unavailable
                                     </button>
                                 <?php endif; ?>
@@ -211,7 +247,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             setActive(document.querySelector('button[data-category="all"]'), 'all');
         });
-</script>
+    </script>
 </body>
 
 </html>
