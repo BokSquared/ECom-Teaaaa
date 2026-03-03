@@ -16,25 +16,35 @@
             <p class="text-[var(--neutral)]/70 mt-2">Explore our collection of artworks, artbooks, and merchandise</p>
         </div>
 
+        <!-- Search Bar with Clear Button -->
+        <div class="mb-6 flex items-center gap-2">
+            <input type="text" id="productSearch" placeholder="Search products..."
+                class="flex-1 px-4 py-2 rounded-lg bg-[#1b1b1b] border border-[var(--secondary)] text-[var(--neutral)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+            <button id="clearSearch" 
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition">
+                Clear
+            </button>
+        </div>
+
         <!-- Filter Tabs -->
         <div class="flex gap-4 mb-8 overflow-x-auto">
-            <button onclick="filterCategory('all')" 
-                    class="category-filter active px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'all')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--primary)] text-white border-2 border-[var(--primary)]"
                     data-category="all">
                 All Products
             </button>
-            <button onclick="filterCategory('artwork')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'artwork')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="artwork">
                 Artworks
             </button>
-            <button onclick="filterCategory('artbook')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'artbook')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="artbook">
                 Artbooks
             </button>
-            <button onclick="filterCategory('merchandise')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'merchandise')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="merchandise">
                 Merchandise
             </button>
@@ -159,54 +169,57 @@
 
     <?= view('components/footer'); ?>
 
-    <style>
-        .category-filter {
-            background: var(--accent);
-            border: 2px solid var(--secondary);
-            color: var(--neutral);
-        }
-        
-        .category-filter.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--neutral);
-        }
-
-        .category-filter:hover {
-            background: var(--secondary)/20;
-        }
-
-        .category-filter.active:hover {
-            background: var(--primary)/80;
-        }
-
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
-
     <script>
-        function filterCategory(category) {
-            // Update active button
-            document.querySelectorAll('.category-filter').forEach(btn => {
-                btn.classList.remove('active');
+        function setActive(button, category) {
+            // Remove active style from all buttons
+            document.querySelectorAll('button[data-category]').forEach(btn => {
+                btn.classList.remove('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+                btn.classList.add('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
             });
-            event.target.classList.add('active');
 
-            // Filter products
+            // Set active style on clicked button
+            button.classList.remove('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
+            button.classList.add('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+
+            // Filter products based on active category + search input
+            filterProducts(category);
+        }
+
+        function filterProducts(category) {
+            const query = document.getElementById('productSearch').value.toLowerCase();
             const products = document.querySelectorAll('.product-card');
+
             products.forEach(product => {
-                if (category === 'all' || product.dataset.category === category) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
-                }
+                const name = product.querySelector('h3').textContent.toLowerCase();
+                const descEl = product.querySelector('p');
+                const desc = descEl ? descEl.textContent.toLowerCase() : '';
+                const matchesCategory = (category === 'all') || (product.dataset.category === category);
+                const matchesSearch = name.includes(query) || desc.includes(query);
+
+                product.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
             });
         }
-    </script>
+
+        // Search input live filtering
+        document.getElementById('productSearch').addEventListener('input', function() {
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+        });
+
+        // Clear button
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            const input = document.getElementById('productSearch');
+            input.value = '';
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+            input.focus();
+        });
+
+        // Initial load: make "All Products" active
+        document.addEventListener('DOMContentLoaded', () => {
+            setActive(document.querySelector('button[data-category="all"]'), 'all');
+        });
+</script>
 </body>
 
 </html>

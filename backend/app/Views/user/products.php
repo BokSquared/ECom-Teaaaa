@@ -8,29 +8,39 @@
     <div class="container mx-auto px-6 py-8">
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-[var(--neutral)]">Browse Products</h1>
-            <p class="text-[var(--neutral)]/70 mt-2">Discover our collection of artworks, artbooks, and merchandise</p>
+            <h1 class="text-3xl font-bold text-[var(--neutral)]">Product Gallery</h1>
+            <p class="text-[var(--neutral)]/70 mt-2">Explore our collection of artworks, artbooks, and merchandise</p>
+        </div>
+
+        <!-- Search Bar with Clear Button -->
+        <div class="mb-6 flex items-center gap-2">
+            <input type="text" id="productSearch" placeholder="Search products..."
+                class="flex-1 px-4 py-2 rounded-lg bg-[#1b1b1b] border border-[var(--secondary)] text-[var(--neutral)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+            <button id="clearSearch" 
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition">
+                Clear
+            </button>
         </div>
 
         <!-- Filter Tabs -->
         <div class="flex gap-4 mb-8 overflow-x-auto">
-            <button onclick="filterCategory('all')" 
-                    class="category-filter active px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'all')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--primary)] text-white border-2 border-[var(--primary)]"
                     data-category="all">
                 All Products
             </button>
-            <button onclick="filterCategory('artwork')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'artwork')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="artwork">
                 Artworks
             </button>
-            <button onclick="filterCategory('artbook')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'artbook')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="artbook">
                 Artbooks
             </button>
-            <button onclick="filterCategory('merchandise')" 
-                    class="category-filter px-6 py-3 rounded-lg font-semibold transition duration-200 whitespace-nowrap"
+            <button onclick="setActive(this, 'merchandise')"
+                    class="px-6 py-3 rounded-lg font-semibold transition whitespace-nowrap bg-[var(--accent)] text-[var(--neutral)] border-2 border-[var(--secondary)]"
                     data-category="merchandise">
                 Merchandise
             </button>
@@ -79,17 +89,23 @@
                                 </span>
                             </div>
 
-                            <!-- Stock Badge -->
+                            <!-- Stock Status Badge -->
                             <?php if ($product->stock <= 5 && $product->stock > 0): ?>
                                 <div class="absolute top-4 left-4">
-                                    <span class="bg-red-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                                        Only <?= $product->stock ?> left!
+                                    <span class="bg-orange-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                        Only <?= $product->stock ?> left
                                     </span>
                                 </div>
                             <?php elseif ($product->stock == 0): ?>
-                                <div class="absolute inset-0 bg-black/70 flex items-center justify-center">
-                                    <span class="bg-red-500 text-white px-6 py-3 rounded-lg text-lg font-bold">
+                                <div class="absolute top-4 left-4">
+                                    <span class="bg-red-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                                         Out of Stock
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <div class="absolute top-4 left-4">
+                                    <span class="bg-green-500/90 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                                        In Stock
                                     </span>
                                 </div>
                             <?php endif; ?>
@@ -109,7 +125,7 @@
                             <?php endif; ?>
 
                             <?php if ($product->description): ?>
-                                <p class="text-[var(--neutral)]/80 text-sm mb-4 line-clamp-2">
+                                <p class="text-[var(--neutral)]/80 text-sm mb-4 line-clamp-3">
                                     <?= esc($product->description) ?>
                                 </p>
                             <?php endif; ?>
@@ -121,21 +137,24 @@
                                     </p>
                                     <p class="text-[var(--neutral)]/60 text-xs">
                                         <i class="fa-solid fa-box mr-1"></i>
-                                        <?= $product->stock ?> in stock
+                                        <?= $product->stock ?> available
                                     </p>
                                 </div>
 
-                                <?php if ($product->stock > 0): ?>
-                                    <a href="/user/order/confirm/<?= esc($product->id) ?>" 
-                                       class="bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-[var(--neutral)] px-6 py-3 rounded-lg font-semibold transition duration-200">
-                                        Order Now
-                                    </a>
-                                <?php else: ?>
-                                    <button disabled
-                                            class="bg-gray-500/20 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">
-                                        Unavailable
-                                    </button>
-                                <?php endif; ?>
+                                <!-- No Order Button - Just Show Availability -->
+                                <div class="text-right">
+                                    <?php if ($product->stock > 0): ?>
+                                        <span class="inline-flex items-center gap-2 text-green-500 text-sm font-semibold">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            Available
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center gap-2 text-red-500 text-sm font-semibold">
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                            Out of Stock
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -146,54 +165,56 @@
 
     <?= view('components/footer'); ?>
 
-    <style>
-        .category-filter {
-            background: var(--accent);
-            border: 2px solid var(--secondary);
-            color: var(--neutral);
-        }
-        
-        .category-filter.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: var(--neutral);
-        }
-
-        .category-filter:hover {
-            background: var(--secondary)/20;
-        }
-
-        .category-filter.active:hover {
-            background: var(--primary)/80;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
-
     <script>
-        function filterCategory(category) {
-            // Update active button
-            document.querySelectorAll('.category-filter').forEach(btn => {
-                btn.classList.remove('active');
+        function setActive(button, category) {
+            // Remove active style from all buttons
+            document.querySelectorAll('button[data-category]').forEach(btn => {
+                btn.classList.remove('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+                btn.classList.add('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
             });
-            event.target.classList.add('active');
 
-            // Filter products
+            // Set active style on clicked button
+            button.classList.remove('bg-[var(--accent)]', 'text-[var(--neutral)]', 'border-[var(--secondary)]');
+            button.classList.add('bg-[var(--primary)]', 'text-white', 'border-[var(--primary)]', 'active');
+
+            // Filter products based on active category + search input
+            filterProducts(category);
+        }
+
+        function filterProducts(category) {
+            const query = document.getElementById('productSearch').value.toLowerCase();
             const products = document.querySelectorAll('.product-card');
+
             products.forEach(product => {
-                if (category === 'all' || product.dataset.category === category) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
-                }
+                const name = product.querySelector('h3').textContent.toLowerCase();
+                const descEl = product.querySelector('p');
+                const desc = descEl ? descEl.textContent.toLowerCase() : '';
+                const matchesCategory = (category === 'all') || (product.dataset.category === category);
+                const matchesSearch = name.includes(query) || desc.includes(query);
+
+                product.style.display = (matchesCategory && matchesSearch) ? 'block' : 'none';
             });
         }
-    </script>
+
+        // Search input live filtering
+        document.getElementById('productSearch').addEventListener('input', function() {
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+        });
+
+        // Clear button
+        document.getElementById('clearSearch').addEventListener('click', function() {
+            const input = document.getElementById('productSearch');
+            input.value = '';
+            const activeCategory = document.querySelector('button.active').dataset.category;
+            filterProducts(activeCategory);
+            input.focus();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setActive(document.querySelector('button[data-category="all"]'), 'all');
+        });
+</script>
 </body>
 
 </html>
