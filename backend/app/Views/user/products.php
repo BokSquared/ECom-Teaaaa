@@ -111,7 +111,7 @@
                             <?php endif; ?>
                         </div>
 
-                        <!-- Product Info -->
+                                                <!-- Product Info -->
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-[var(--neutral)] mb-2">
                                 <?= esc($product->name) ?>
@@ -125,7 +125,7 @@
                             <?php endif; ?>
 
                             <?php if ($product->description): ?>
-                                <p class="text-[var(--neutral)]/80 text-sm mb-4 line-clamp-3">
+                                <p class="text-[var(--neutral)]/80 text-sm mb-4 line-clamp-2">
                                     <?= esc($product->description) ?>
                                 </p>
                             <?php endif; ?>
@@ -133,28 +133,25 @@
                             <div class="flex items-center justify-between pt-4 border-t border-[var(--secondary)]/20">
                                 <div>
                                     <p class="text-[var(--primary)] font-bold text-2xl">
-                                        ₱<?= number_format($product->price, 2) ?>
+                                        $<?= number_format($product->price, 2) ?>
                                     </p>
                                     <p class="text-[var(--neutral)]/60 text-xs">
                                         <i class="fa-solid fa-box mr-1"></i>
-                                        <?= $product->stock ?> available
+                                        <?= $product->stock ?> in stock
                                     </p>
                                 </div>
 
-                                <!-- No Order Button - Just Show Availability -->
-                                <div class="text-right">
-                                    <?php if ($product->stock > 0): ?>
-                                        <span class="inline-flex items-center gap-2 text-green-500 text-sm font-semibold">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                            Available
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="inline-flex items-center gap-2 text-red-500 text-sm font-semibold">
-                                            <i class="fa-solid fa-circle-xmark"></i>
-                                            Out of Stock
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if ($product->stock > 0): ?>
+                                    <a href="/user/order/confirm/<?= esc($product->id) ?>" 
+                                       class="bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-[var(--neutral)] px-6 py-3 rounded-lg font-semibold transition duration-200">
+                                        Order Now
+                                    </a>
+                                <?php else: ?>
+                                    <button disabled
+                                            class="bg-gray-500/20 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">
+                                        Unavailable
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
