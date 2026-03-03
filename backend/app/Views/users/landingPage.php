@@ -76,7 +76,7 @@
             $artworks = [
                 ["img" => "https://i.pinimg.com/736x/ac/8c/79/ac8c790b5b99c2d8ae52bd4f87f4062e.jpg", "title" => "727", "artist" => "Takashi Murakami"],
                 ["img" => "https://i.pinimg.com/736x/0b/f7/31/0bf73170624ab7a124adef98ebf4461d.jpg", "title" => "Lady Murasaki Writing at Her Desk", "artist" => "Tosa Mitsuoki"],
-                ["img" => "https://i.pinimg.com/1200x/dd/36/39/dd3639c5b1a79caf949a5b641705a8f2.jpg", "title" => "Dots Obsession", "artist" => "Yayoi Kusama"]
+                ["img" => "https://www.singulart.com/images-sh/eyJidWNrZXQiOiJzaW5ndWxhcnQtd2Vic2l0ZS1wcm9kIiwia2V5IjoiYXJ0d29ya3NcL3YyXC9jcm9wcGVkXC84MTgxOVwvbWFpblwvem9vbVwvMjU3MDYzMV9iMDgyNmNhMzA1YTIzYjJkNmM3NWYyZTVkODllMmI1YS5qcGVnIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjoxNTM0LCJoZWlnaHQiOjYwMCwiZml0IjoiaW5zaWRlIiwiYmFja2dyb3VuZCI6bnVsbH0sInRvRm9ybWF0Ijoid2VicCJ9fQ==?signature=c89ecad921bdc9b06901f23285232388128c31a64bc5acb82836ad57eb777bf8", "title" => "immer im Blick", "artist" => "Margit Schick"]
             ];
             foreach ($artworks as $art) : ?>
                 <div class="bg-[#1b1b1b] rounded-xl overflow-hidden shadow-lg transform hover:scale-[1.03] transition duration-300">

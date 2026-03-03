@@ -117,7 +117,7 @@
                             <div class="flex items-center justify-between pt-4 border-t border-[var(--secondary)]/20">
                                 <div>
                                     <p class="text-[var(--primary)] font-bold text-2xl">
-                                        $<?= number_format($product->price, 2) ?>
+                                        ₱<?= number_format($product->price, 2) ?>
                                     </p>
                                     <p class="text-[var(--neutral)]/60 text-xs">
                                         <i class="fa-solid fa-box mr-1"></i>
