@@ -345,6 +345,21 @@ class User extends BaseController
     // ============================================
     // USER ORDERS - View Single Order
     // ============================================
+
+    public function checkout()
+    {
+        $cart = $this->cleanupCart(); // clean cart first
+
+        if (empty($cart)) {
+            session()->setFlashdata('error', 'Your cart is empty or items are no longer available.');
+            return redirect()->to('/user/cart');
+        }
+
+        return view('user/checkout', [
+            'title' => 'Checkout',
+            'cart' => $cart
+        ]);
+    }
     public function cleanupCart()
     {
         $session = session();
@@ -365,21 +380,6 @@ class User extends BaseController
 
         return $updatedCart;
     }
-    public function checkout()
-    {
-        $cart = $this->cleanupCart(); // clean cart first
-
-        if (empty($cart)) {
-            session()->setFlashdata('error', 'Your cart is empty or items are no longer available.');
-            return redirect()->to('/user/cart');
-        }
-
-        return view('user/checkout', [
-            'title' => 'Checkout',
-            'cart' => $cart
-        ]);
-    }
-
     public function viewOrder($orderId)
     {
         // Get order with items
