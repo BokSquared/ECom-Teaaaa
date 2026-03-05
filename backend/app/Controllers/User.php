@@ -405,4 +405,67 @@ class User extends BaseController
             'user' => $user
         ]);
     }
+    //payments
+    public function payCOD($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new \App\Models\OrdersModel();
+
+        $orderModel->update($orderId, [
+            'payment_method' => 'cod',
+            'payment_status' => 'paid',
+            'status' => 'processing'
+        ]);
+
+        return redirect()->to('/user/orders/' . $orderId)
+            ->with('success', 'Order confirmed! Pay when it arrives.');
+    }
+    public function payPaypal($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new \App\Models\OrdersModel();
+
+        $orderModel->update($orderId, [
+            'payment_method' => 'paypal',
+            'payment_status' => 'paid',
+            'status' => 'processing'
+        ]);
+
+        return redirect()->to('/user/orders/' . $orderId)
+            ->with('success', 'PayPal payment successful!');
+    }
+    public function payGCash($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new \App\Models\OrdersModel();
+        $order = $orderModel->find($orderId);
+
+        $data = [
+            'order' => $order
+        ];
+
+        return view('user/gcash_qr', $data);
+    }
+    public function confirmGCash($orderId)
+    {
+        $orderModel = new \App\Models\OrdersModel();
+
+        $orderModel->update($orderId, [
+            'payment_method' => 'gcash',
+            'payment_status' => 'paid',
+            'status' => 'processing'
+        ]);
+
+        return redirect()->to('/user/orders/' . $orderId)
+            ->with('success', 'GCash payment successful!');
+    }
 }
