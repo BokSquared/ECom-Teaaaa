@@ -188,33 +188,7 @@ class User extends BaseController
     // ============================================
     // USER ORDER - Show Confirmation Page
     // ============================================
-    public function orderConfirm($productId)
-    {
-        // Get product
-        $product = $this->productModel->find($productId);
 
-        // Verify product exists and is available
-        if (!$product) {
-            session()->setFlashdata('error', 'Product not found');
-            return redirect()->to('/user/products');
-        }
-
-        if ($product->is_available != 1 || $product->stock <= 0) {
-            session()->setFlashdata('error', 'Product is not available for order');
-            return redirect()->to('/user/products');
-        }
-
-        // Get current user
-        $user = $this->userModel->find($this->userId);
-
-        $data = [
-            'title' => 'Order Confirmation',
-            'product' => $product,
-            'user' => $user,
-        ];
-
-        return view('user/order_confirm', $data);
-    }
 
     // ============================================
     // USER ORDER - Submit Order
@@ -307,7 +281,7 @@ class User extends BaseController
             if ($this->orderModel->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-
+            $session->remove('cart');
             $session->setFlashdata('success', 'Order placed successfully! Our team will contact you soon.');
             return redirect()->to('/user/orders');
         } catch (\Throwable $e) {
@@ -403,5 +377,32 @@ class User extends BaseController
         ];
 
         return view('user/order_detail', $data);
+    }
+
+    public function orderConfirm($productId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $product = $this->productModel->find($productId);
+
+        if (!$product) {
+            session()->setFlashdata('error', 'Product not found');
+            return redirect()->to('/user/products');
+        }
+
+        $user = $this->userModel->find($this->userId);
+
+        if (!$user) {
+            session()->setFlashdata('error', 'User not found');
+            return redirect()->to('/login');
+        }
+
+        return view('user/order_confirm', [
+            'title' => 'Order Confirmation',
+            'product' => $product,
+            'user' => $user
+        ]);
     }
 }
