@@ -1,8 +1,8 @@
 <?= view('components/head'); ?>
 
-<header class="flex justify-between items-center px-6 md:px-10 py-6 border-b border-[var(--secondary)]/20 bg-[var(--accent)] sticky top-0 z-50">
+<header class="top-0 z-50 sticky flex justify-between items-center bg-[var(--accent)] px-6 md:px-10 py-6 border-[var(--secondary)]/20 border-b">
     <a href="/user/profile">
-        <h1 class="text-xl md:text-2xl font-semibold text-[var(--secondary)]">🔥 Edo Ember Gallery</h1>
+        <h1 class="font-semibold text-[var(--secondary)] text-xl md:text-2xl">🔥 Edo Ember Gallery</h1>
     </a>
 
     <!-- Desktop Navigation -->
@@ -10,12 +10,13 @@
         <a href="/user/profile" class="hover:text-[var(--primary)] transition">My Profile</a>
         <a href="/user/products" class="hover:text-[var(--primary)] transition">Products</a>
         <a href="/user/orders" class="hover:text-[var(--primary)] transition">My Orders</a>
+        <a href="/user/cart" class="hover:text-[var(--primary)] transition">My Cart</a>
     </nav>
 
     <!-- Desktop User Info & Logout -->
     <div class="hidden md:flex items-center gap-4">
         <div class="text-right">
-            <p class="text-[var(--neutral)] text-sm font-semibold">
+            <p class="font-semibold text-[var(--neutral)] text-sm">
                 <?= esc(session()->get('userName')) ?>
             </p>
             <p class="text-[var(--secondary)] text-xs">
@@ -23,13 +24,13 @@
             </p>
         </div>
         <a href="/logout"
-            class="bg-[var(--primary)]/20 hover:bg-[var(--primary)] text-[var(--primary)] hover:text-[var(--neutral)] px-4 py-2 rounded-lg font-semibold transition duration-200 border border-[var(--primary)]">
+            class="bg-[var(--primary)]/20 hover:bg-[var(--primary)] px-4 py-2 border border-[var(--primary)] rounded-lg font-semibold text-[var(--primary)] hover:text-[var(--neutral)] transition duration-200">
             Logout
         </a>
     </div>
 
     <!-- Mobile Menu Button -->
-    <button id="mobileMenuBtn" class="md:hidden text-[var(--neutral)] focus:outline-none">
+    <button id="mobileMenuBtn" class="md:hidden focus:outline-none text-[var(--neutral)]">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
@@ -37,11 +38,11 @@
 </header>
 
 <!-- Mobile Menu -->
-<div id="mobileMenu" class="hidden md:hidden bg-[#1b1b1b] border-b border-[var(--secondary)]/20 sticky top-[73px] z-40">
-    <nav class="flex flex-col px-6 py-4 space-y-4">
+<div id="mobileMenu" class="hidden md:hidden top-[73px] z-40 sticky bg-[#1b1b1b] border-[var(--secondary)]/20 border-b">
+    <nav class="flex flex-col space-y-4 px-6 py-4">
         <!-- User Info -->
-        <div class="pb-4 border-b border-[var(--secondary)]/20">
-            <p class="text-[var(--neutral)] text-sm font-semibold">
+        <div class="pb-4 border-[var(--secondary)]/20 border-b">
+            <p class="font-semibold text-[var(--neutral)] text-sm">
                 <?= esc(session()->get('userName')) ?>
             </p>
             <p class="text-[var(--secondary)] text-xs">
@@ -56,7 +57,7 @@
 
         <!-- Logout Button -->
         <a href="/logout"
-            class="bg-[var(--primary)]/20 hover:bg-[var(--primary)] text-[var(--primary)] hover:text-[var(--neutral)] px-4 py-3 rounded-lg font-semibold transition duration-200 border border-[var(--primary)] text-center">
+            class="bg-[var(--primary)]/20 hover:bg-[var(--primary)] px-4 py-3 border border-[var(--primary)] rounded-lg font-semibold text-[var(--primary)] hover:text-[var(--neutral)] text-center transition duration-200">
             Logout
         </a>
     </nav>

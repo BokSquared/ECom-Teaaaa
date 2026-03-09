@@ -25,7 +25,7 @@ class User extends BaseController
         $this->productModel = new ProductsModel();
         $this->orderModel = new OrdersModel();
         $this->orderItemModel = new OrderItemsModel();
-        
+
         // Get current logged-in user data from session
         $this->userId = session()->get('userId');
         $this->userEmail = session()->get('userEmail');
@@ -59,7 +59,7 @@ class User extends BaseController
 
         // Get current user
         $currentUser = $this->userModel->find($this->userId);
-        
+
         // Validation rules (controller level - lighter validation)
         $validation = \Config\Services::validation();
         $rules = [
@@ -106,7 +106,7 @@ class User extends BaseController
 
             // Update user (model will validate with proper ID context)
             $result = $this->userModel->update($this->userId, $updateData);
-            
+
             if (!$result) {
                 // Get model errors if update failed
                 $errors = $this->userModel->errors();
@@ -122,7 +122,6 @@ class User extends BaseController
 
             $session->setFlashdata('success', 'Profile updated successfully!');
             return redirect()->to('/user/profile');
-
         } catch (\Throwable $e) {
             $session->setFlashdata('error', 'Server error: ' . $e->getMessage());
             return redirect()->back()->withInput();
@@ -160,7 +159,6 @@ class User extends BaseController
             // Return success response
             return $this->response->setStatusCode(ResponseInterface::HTTP_OK)
                 ->setJSON(['success' => true, 'message' => 'Account deactivated successfully']);
-
         } catch (\Throwable $e) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                 ->setJSON(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
@@ -190,33 +188,7 @@ class User extends BaseController
     // ============================================
     // USER ORDER - Show Confirmation Page
     // ============================================
-    public function orderConfirm($productId)
-    {
-        // Get product
-        $product = $this->productModel->find($productId);
 
-        // Verify product exists and is available
-        if (!$product) {
-            session()->setFlashdata('error', 'Product not found');
-            return redirect()->to('/user/products');
-        }
-
-        if ($product->is_available != 1 || $product->stock <= 0) {
-            session()->setFlashdata('error', 'Product is not available for order');
-            return redirect()->to('/user/products');
-        }
-
-        // Get current user
-        $user = $this->userModel->find($this->userId);
-
-        $data = [
-            'title' => 'Order Confirmation',
-            'product' => $product,
-            'user' => $user,
-        ];
-
-        return view('user/order_confirm', $data);
-    }
 
     // ============================================
     // USER ORDER - Submit Order
@@ -309,10 +281,9 @@ class User extends BaseController
             if ($this->orderModel->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-
+            $session->remove('cart');
             $session->setFlashdata('success', 'Order placed successfully! Our team will contact you soon.');
             return redirect()->to('/user/orders');
-
         } catch (\Throwable $e) {
             $session->setFlashdata('error', 'Failed to place order: ' . $e->getMessage());
             return redirect()->back()->withInput();
@@ -329,7 +300,7 @@ class User extends BaseController
             ->where('user_id', $this->userId)
             ->orderBy('id', 'DESC')
             ->findAll();
-        
+
         // Count items for each order
         foreach ($orders as $order) {
             $order->items_count = $this->orderItemModel
@@ -348,17 +319,52 @@ class User extends BaseController
     // ============================================
     // USER ORDERS - View Single Order
     // ============================================
+
+    public function checkout()
+    {
+        $cart = $this->cleanupCart(); // clean cart first
+
+        if (empty($cart)) {
+            session()->setFlashdata('error', 'Your cart is empty or items are no longer available.');
+            return redirect()->to('/user/cart');
+        }
+
+        return view('user/checkout', [
+            'title' => 'Checkout',
+            'cart' => $cart
+        ]);
+    }
+    public function cleanupCart()
+    {
+        $session = session();
+        $cart = $session->get('cart') ?? [];
+        $updatedCart = [];
+
+        $productModel = new ProductsModel();
+
+        foreach ($cart as $item) {
+            $product = $productModel->find($item['id']);
+            if ($product && $product->is_available == 1 && $product->stock > 0) {
+                $updatedCart[] = $item;
+            }
+        }
+
+        // Update session with cleaned cart
+        $session->set('cart', $updatedCart);
+
+        return $updatedCart;
+    }
     public function viewOrder($orderId)
     {
         // Get order with items
         $order = $this->orderModel->getOrderWithItems($orderId);
-        
+
         // Verify order exists
         if (!$order) {
             session()->setFlashdata('error', 'Order not found');
             return redirect()->to('/user/orders');
         }
-        
+
         // Verify order belongs to current user (security check)
         if ($order->user_id != $this->userId) {
             session()->setFlashdata('error', 'You do not have permission to view this order');
@@ -371,5 +377,32 @@ class User extends BaseController
         ];
 
         return view('user/order_detail', $data);
+    }
+
+    public function orderConfirm($productId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $product = $this->productModel->find($productId);
+
+        if (!$product) {
+            session()->setFlashdata('error', 'Product not found');
+            return redirect()->to('/user/products');
+        }
+
+        $user = $this->userModel->find($this->userId);
+
+        if (!$user) {
+            session()->setFlashdata('error', 'User not found');
+            return redirect()->to('/login');
+        }
+
+        return view('user/order_confirm', [
+            'title' => 'Order Confirmation',
+            'product' => $product,
+            'user' => $user
+        ]);
     }
 }

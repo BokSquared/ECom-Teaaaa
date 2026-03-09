@@ -17,9 +17,9 @@ $routes->get('/moodBoard', 'Users::moodBoard');
 
 $routes->get('/dashboard', 'Admin::dashboard');
 
-$routes->get('/', 'Users::index');         
+$routes->get('/', 'Users::index');
 
-$routes->get('/userProducts', 'Users::userProducts'); 
+$routes->get('/userProducts', 'Users::userProducts');
 
 // ============================================
 // ADMIN - DASHBOARD
@@ -122,17 +122,23 @@ $routes->group('admin/orders', ['filter' => 'auth:admin'], function ($routes) {
 // USER ROUTES (Regular Users Only)
 // ============================================
 
-$routes->group('user', ['filter' => 'auth:user'], function($routes) {
+$routes->group('user', ['filter' => 'auth:user'], function ($routes) {
     // Profile Management
     $routes->get('profile', 'User::profile');
     $routes->post('profile/update', 'User::updateProfile');
     $routes->post('profile/deactivate', 'User::deactivateAccount');
-    
+
     // Products Browsing
     $routes->get('products', 'User::products');
+    // Cart
+    $routes->get('cart', 'CartController::index');
+    $routes->post('cart/add', 'CartController::add');
+    $routes->post('cart/update', 'CartController::update');
+    $routes->post('cart/remove', 'CartController::remove');
+    $routes->get('user/checkout', 'User::checkout');
 
-    
-    
+
+
     // Order Management
     $routes->get('order/confirm/(:num)', 'User::orderConfirm/$1');
     $routes->post('order/submit', 'User::orderSubmit');
