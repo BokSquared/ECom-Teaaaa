@@ -20,10 +20,10 @@ class OrdersModel extends Model
     protected $table            = 'orders';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'App\Entities\Order'; // ✅ FIXED: Returns Order entity instead of stdClass
+    protected $returnType       = 'App\Entities\Order';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    
+
     /**
      * Allowed Fields
      * These are the fields that can be mass-assigned
@@ -38,6 +38,9 @@ class OrdersModel extends Model
         'total_amount',
         'status',
         'payment_status',
+        'payment_method',
+        'shipping_cost',
+        'estimated_delivery',
         'notes',
     ];
 
@@ -80,11 +83,11 @@ class OrdersModel extends Model
             // Get the last order ID
             $lastOrder = $this->orderBy('id', 'DESC')->first();
             $nextId = $lastOrder ? $lastOrder->id + 1 : 1;
-            
+
             // Format: EDO-001, EDO-002, etc.
             $data['data']['order_number'] = 'EDO-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
         }
-        
+
         return $data;
     }
 
@@ -101,7 +104,7 @@ class OrdersModel extends Model
     {
         // Get the order (now returns Order entity)
         $order = $this->find($orderId);
-        
+
         if (!$order) {
             return null;
         }
@@ -129,11 +132,89 @@ class OrdersModel extends Model
         $builder->join('users', 'users.id = orders.user_id', 'left');
         $builder->where('orders.deleted_at', null);
         $builder->orderBy('orders.id', 'DESC');
-        
+
         if ($limit) {
             $builder->limit($limit);
         }
-        
+
         return $builder->get()->getResult();
+    }
+    public function payCOD($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new OrdersModel();
+
+        $orderModel->update($orderId, [
+            'payment_method' => 'COD',
+            'payment_status' => 'paid',
+            'status'         => 'processing'
+        ]);
+
+        return redirect()->to("/user/orders/view/{$orderId}")
+            ->with('success', 'COD Payment marked as paid. Order is good to go!');
+    }
+
+    // ------------------------
+    // PayPal Payment (simulation)
+    // ------------------------
+    public function payPaypal($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new OrdersModel();
+
+        // Simulate payment success
+        $orderModel->update($orderId, [
+            'payment_method' => 'PayPal',
+            'payment_status' => 'paid',
+            'status'         => 'processing'
+        ]);
+
+        return redirect()->to("/user/orders/view/{$orderId}")
+            ->with('success', 'PayPal payment successful!');
+    }
+
+    // ------------------------
+    // GCash Payment (simulation)
+    // ------------------------
+    public function payGCash($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new OrdersModel();
+
+        // Simulate showing QR / confirmation screen
+        return view('user/gcash_qr', [
+            'order' => $orderModel->find($orderId)
+        ]);
+    }
+
+    // ------------------------
+    // GCash Confirm (after scanning QR - simulation)
+    // ------------------------
+    public function confirmGCash($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $orderModel = new OrdersModel();
+
+        // Mark order as paid with GCash
+        $orderModel->update($orderId, [
+            'payment_method' => 'GCash',
+            'payment_status' => 'paid',
+            'status'         => 'processing'
+        ]);
+
+        return redirect()->to("/user/orders/view/{$orderId}")
+            ->with('success', 'GCash payment successful!');
     }
 }

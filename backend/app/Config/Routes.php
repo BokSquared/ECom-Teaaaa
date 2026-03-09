@@ -144,4 +144,9 @@ $routes->group('user', ['filter' => 'auth:user'], function ($routes) {
     $routes->post('order/submit', 'User::orderSubmit');
     $routes->get('orders', 'User::orders');
     $routes->get('orders/view/(:num)', 'User::viewOrder/$1');
+
+    $routes->get('pay/cod/(:num)', 'User::payCOD/$1');
+    $routes->get('pay/paypal/(:num)', 'User::payPaypal/$1');
+    $routes->get('pay/gcash/(:num)', 'User::payGCash/$1');
+    $routes->get('pay/gcash/confirm/(:num)', 'User::confirmGCash/$1');
 });

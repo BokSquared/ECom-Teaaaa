@@ -1,7 +1,7 @@
 <?= view('components/head'); ?>
 
 <header class="top-0 z-50 sticky flex justify-between items-center bg-[var(--accent)] px-6 md:px-10 py-6 border-[var(--secondary)]/20 border-b">
-    <a href="/user/profile">
+    <a href="/">
         <h1 class="font-semibold text-[var(--secondary)] text-xl md:text-2xl">🔥 Edo Ember Gallery</h1>
     </a>
 

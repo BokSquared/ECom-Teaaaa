@@ -405,4 +405,64 @@ class User extends BaseController
             'user' => $user
         ]);
     }
+    //payments
+    public function payCOD($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $order = $this->orderModel->find($orderId);
+
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'Cash on Delivery',
+            'payment_status' => 'paid',
+            'status'         => 'processing',
+            'shipping_cost'  => 50,
+            'estimated_delivery' => date('Y-m-d', strtotime($order->created_at . ' +5 days'))
+        ]);
+
+        return redirect()->to('/user/orders/view/' . $orderId)
+            ->with('success', 'Order confirmed! Pay when it arrives.');
+    }
+
+    public function payPaypal($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $order = $this->orderModel->find($orderId);
+
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'PayPal',
+            'payment_status' => 'paid',
+            'status'         => 'processing',
+            'shipping_cost'  => 50,
+            'estimated_delivery' => date('Y-m-d', strtotime($order->created_at . ' +5 days'))
+        ]);
+
+        return redirect()->to('/user/orders/view/' . $orderId)
+            ->with('success', 'PayPal payment successful!');
+    }
+
+    public function payGCash($orderId)
+    {
+        if (!$this->userId) {
+            return redirect()->to('/login');
+        }
+
+        $order = $this->orderModel->find($orderId);
+
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'GCash',
+            'payment_status' => 'paid',
+            'status'         => 'processing',
+            'shipping_cost'  => 50,
+            'estimated_delivery' => date('Y-m-d', strtotime($order->created_at . ' +5 days'))
+        ]);
+
+        return redirect()->to('/user/orders/view/' . $orderId)
+            ->with('success', 'GCash payment successful!');
+    }
 }
