@@ -11,15 +11,13 @@ This project demonstrates CRUD-based gallery and commission management, built fo
 
 </div>
 
-**Group:** Litten  
-
-**Team Leader:** Tampipig, Shane
+**Group:** Teaaaa
 
 **Members:**  
-- Bundalian, Romeo Andree  
-- Gonzales, Orven  
-- Japon, Althaea  
-- Sapallo, Cyrus  
+- Capapas, Naomie Feona
+- Japon, Althaea
+- Rarang, Hazelle Mae
+- Ramos, Aiel Wren
 
 ---
 
