@@ -205,8 +205,11 @@
                         <?php if ($order->payment_status === 'paid'): ?>
                             <span class="font-bold text-[var(--primary)]">
                                 Paid via <?= esc($order->payment_method ?? 'Unknown') ?>
+                                <p>Shipping Cost: $<?= number_format($order->shipping_cost, 2) ?></p>
+                                <p>Estimated Delivery: <?= date('F j, Y', strtotime($order->estimated_delivery)) ?></p>
                             </span>
                         <?php endif; ?>
+
                         <!-- Last Updated -->
                         <div>
                             <p class="mb-2 text-[var(--neutral)]/60 text-sm">Last Updated</p>

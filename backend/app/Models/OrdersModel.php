@@ -39,6 +39,8 @@ class OrdersModel extends Model
         'status',
         'payment_status',
         'payment_method',
+        'shipping_cost',
+        'estimated_delivery',
         'notes',
     ];
 
