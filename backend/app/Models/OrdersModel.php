@@ -20,7 +20,7 @@ class OrdersModel extends Model
     protected $table            = 'orders';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'App\Entities\Order'; // ✅ FIXED: Returns Order entity instead of stdClass
+    protected $returnType       = 'App\Entities\Order';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
 
@@ -38,6 +38,7 @@ class OrdersModel extends Model
         'total_amount',
         'status',
         'payment_status',
+        'payment_method',
         'notes',
     ];
 

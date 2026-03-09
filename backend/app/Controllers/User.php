@@ -412,15 +412,13 @@ class User extends BaseController
             return redirect()->to('/login');
         }
 
-        $orderModel = new \App\Models\OrdersModel();
-
-        $orderModel->update($orderId, [
-            'payment_method' => 'cod',
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'Cash on Delivery',
             'payment_status' => 'paid',
             'status' => 'processing'
         ]);
 
-        return redirect()->to('/user/orders/' . $orderId)
+        return redirect()->to('/user/orders/view/' . $orderId)
             ->with('success', 'Order confirmed! Pay when it arrives.');
     }
     public function payPaypal($orderId)
@@ -429,15 +427,13 @@ class User extends BaseController
             return redirect()->to('/login');
         }
 
-        $orderModel = new \App\Models\OrdersModel();
-
-        $orderModel->update($orderId, [
-            'payment_method' => 'paypal',
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'PayPal',
             'payment_status' => 'paid',
             'status' => 'processing'
         ]);
 
-        return redirect()->to('/user/orders/' . $orderId)
+        return redirect()->to('/user/orders/view/' . $orderId)
             ->with('success', 'PayPal payment successful!');
     }
     public function payGCash($orderId)
@@ -446,26 +442,13 @@ class User extends BaseController
             return redirect()->to('/login');
         }
 
-        $orderModel = new \App\Models\OrdersModel();
-        $order = $orderModel->find($orderId);
-
-        $data = [
-            'order' => $order
-        ];
-
-        return view('user/gcash_qr', $data);
-    }
-    public function confirmGCash($orderId)
-    {
-        $orderModel = new \App\Models\OrdersModel();
-
-        $orderModel->update($orderId, [
-            'payment_method' => 'gcash',
+        $this->orderModel->update($orderId, [
+            'payment_method' => 'GCash',
             'payment_status' => 'paid',
             'status' => 'processing'
         ]);
 
-        return redirect()->to('/user/orders/' . $orderId)
+        return redirect()->to('/user/orders/view/' . $orderId)
             ->with('success', 'GCash payment successful!');
     }
 }

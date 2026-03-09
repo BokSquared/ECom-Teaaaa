@@ -203,7 +203,9 @@
                             </div>
                         <?php endif; ?>
                         <?php if ($order->payment_status === 'paid'): ?>
-                            <span class="font-bold text-[var(--primary)]">Paid via <?= esc($order->payment_method) ?></span>
+                            <span class="font-bold text-[var(--primary)]">
+                                Paid via <?= esc($order->payment_method ?? 'Unknown') ?>
+                            </span>
                         <?php endif; ?>
                         <!-- Last Updated -->
                         <div>
