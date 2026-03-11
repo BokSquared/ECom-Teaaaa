@@ -356,19 +356,41 @@ class User extends BaseController
     }
     public function viewOrder($orderId)
     {
-        // Get order with items
         $order = $this->orderModel->getOrderWithItems($orderId);
 
-        // Verify order exists
         if (!$order) {
             session()->setFlashdata('error', 'Order not found');
             return redirect()->to('/user/orders');
         }
 
-        // Verify order belongs to current user (security check)
         if ($order->user_id != $this->userId) {
             session()->setFlashdata('error', 'You do not have permission to view this order');
             return redirect()->to('/user/orders');
+        }
+
+        // AUTO STATUS PROGRESSION
+        if ($order->payment_status === 'paid' && $order->status !== 'cancelled') {
+
+            $created = strtotime($order->updated_at);
+            $now = time();
+
+            $secondsPassed = $now - $created;
+
+            if ($secondsPassed >= 60 && $order->status !== 'delivered') {
+
+                $this->orderModel->update($order->id, [
+                    'status' => 'delivered'
+                ]);
+
+                $order->status = 'delivered';
+            } elseif ($secondsPassed >= 30 && $order->status === 'processing') {
+
+                $this->orderModel->update($order->id, [
+                    'status' => 'shipped'
+                ]);
+
+                $order->status = 'shipped';
+            }
         }
 
         $data = [
