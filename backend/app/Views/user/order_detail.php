@@ -251,6 +251,48 @@
                     </div>
                 </div>
 
+                <!-- Feedback Review -->
+                <div class="bg-[#1b1b1b] shadow-xl p-6 border border-[var(--secondary)]/20 rounded-lg mt-6">
+                    <h2 class="mb-4 font-bold text-[var(--neutral)] text-xl">Leave Feedback</h2>
+
+                    <form id="feedbackForm">
+                        <textarea id="feedbackInput"
+                                rows="4"
+                                class="w-full bg-[var(--accent)] border border-[var(--secondary)]/30 rounded-lg px-4 py-3 text-[var(--neutral)] focus:outline-none focus:border-[var(--secondary)] transition"
+                                placeholder="Share your thoughts about this order..."></textarea>
+
+                        <button id="feedbackSubmit"
+                                type="button"
+                                class="mt-4 w-full bg-[var(--primary)] hover:bg-[var(--primary)]/80 text-[var(--neutral)] px-6 py-3 rounded-lg font-bold transition duration-200">
+                            <i class="fa-solid fa-paper-plane mr-2"></i>
+                            Submit Feedback
+                        </button>
+                    </form>
+
+                    <!-- Hidden success message -->
+                    <div id="feedbackSuccess" class="hidden mt-4 mb-0 bg-green-500/10 border border-green-500 text-green-600 p-3 rounded-lg text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        Feedback submitted successfully
+                    </div>
+                </div>
+
+                <script>
+                document.getElementById('feedbackSubmit').addEventListener('click', function() {
+                    // Disable textarea and button
+                    const textarea = document.getElementById('feedbackInput');
+                    textarea.readOnly = true;
+
+                    const button = document.getElementById('feedbackSubmit');
+                    button.disabled = true;
+
+                    // Show simulated success message
+                    document.getElementById('feedbackSuccess').classList.remove('hidden');
+
+                    // Optional: change button text
+                    button.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Feedback Submitted';
+                });
+                </script>
+
                 <!-- Back Button -->
                 <a href="/user/orders"
                     class="block bg-[var(--accent)] hover:bg-[var(--secondary)]/10 px-4 py-3 border border-[var(--secondary)]/30 rounded-lg w-full font-semibold text-[var(--neutral)] text-center transition duration-200">

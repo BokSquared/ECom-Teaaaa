@@ -251,6 +251,14 @@
                                 </div>
                             </div>
 
+                            <!-- Quality Assurance Status -->
+                            <div class="pt-4 border-t border-[var(--secondary)]/20">
+                                <div class="bg-yellow-500/10 border border-yellow-500 rounded-lg p-3 text-yellow-600 text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Your order will be reviewed by our admin for quality assurance after submission.
+                                </div>
+                            </div>
+
                             <!-- Action Buttons -->
                             <div class="pt-6 space-y-3">
                                 <button type="submit"
